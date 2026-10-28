@@ -25,8 +25,8 @@ jobs:
 
       - name: Extrair URLs das Streams e Gerar M3U8s
         run: |
-          python telepace1.py
-          python telepace2.py
+          python scripts/telepace1.py
+          python scripts/telepace2.py
 
       - name: Publicar M3U8s Atualizados
         run: |
@@ -36,20 +36,21 @@ jobs:
           # Guardar ambos os ficheiros gerados na pasta temporaria
           tmp_m3u1="$(mktemp)"
           tmp_m3u2="$(mktemp)"
-          cp telepace1.m3u8 "$tmp_m3u1"
-          cp telepace2.m3u8 "$tmp_m3u2"
+          cp streams/telepace1.m3u8 "$tmp_m3u1"
+          cp streams/telepace2.m3u8 "$tmp_m3u2"
           
           # Sincronizar com a branch remota sem conflitos
           git fetch origin main
           git reset --hard origin/main
           
-          # Repor os dois ficheiros atualizados
-          cp "$tmp_m3u1" telepace1.m3u8
-          cp "$tmp_m3u2" telepace2.m3u8
+          # Garantir que a pasta de destino existe e repor os ficheiros
+          mkdir -p streams
+          cp "$tmp_m3u1" streams/telepace1.m3u8
+          cp "$tmp_m3u2" streams/telepace2.m3u8
           rm -f "$tmp_m3u1" "$tmp_m3u2"
           
           # Adicionar ambos ao staging do Git
-          git add telepace1.m3u8 telepace2.m3u8
+          git add streams/telepace1.m3u8 streams/telepace2.m3u8
           
           if git diff --cached --quiet; then
             echo 'Sem alteracoes nas streams'
