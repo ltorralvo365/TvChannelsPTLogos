@@ -55,6 +55,7 @@ def main():
     # Layout exato de Master Playlist
     m3u_content = f"""#EXTM3U
 #EXT-X-VERSION:3
+#EXT-X-STREAM-INF:BANDWIDTH=1465567,FRAME-RATE=25,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
 {stream_url}
 """
 
