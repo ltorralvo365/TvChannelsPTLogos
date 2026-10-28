@@ -5,7 +5,7 @@ import urllib.request
 
 VIDEO_ID = "x9pha96"
 GEO_URL = f"https://geo.dailymotion.com/videos/{VIDEO_ID}"
-OUTPUT_M3U = "telepace1.m3u8"  # Guardar como .m3u8
+OUTPUT_M3U = "Streams/telepace1.m3u8"  # Guardar como .m3u8
 
 def get_stream_url():
     headers = {

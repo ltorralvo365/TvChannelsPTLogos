@@ -31,7 +31,7 @@ except Exception:  # pragma: no cover
 # CONFIGURACAO
 # ============================================================
 NR_DAYS         = 7
-OUTPUT_FILE     = "epg_vodafone.xml"
+OUTPUT_FILE     = "EPG/epg_vodafone.xml"
 REQUEST_TIMEOUT = 20
 
 baseUrl = "https://www.meo.pt"

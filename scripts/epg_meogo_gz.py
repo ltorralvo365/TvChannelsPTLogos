@@ -31,7 +31,7 @@ except Exception:  # pragma: no cover
 # CONFIGURACAO
 # ============================================================
 NR_DAYS         = 7
-OUTPUT_FILE     = "epg_meogo.xml"
+OUTPUT_FILE     = "epg/epg_meogo.xml"
 REQUEST_TIMEOUT = 20
 
 baseUrl = "https://www.meo.pt"
