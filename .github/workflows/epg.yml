@@ -30,7 +30,7 @@ jobs:
         run: python -m pip install tzdata
 
       - name: Extrair EPG e gerar GZ
-        run: python epg_meogo.py
+        run: python scripts/epg_meogo.py
 
       - name: Verificar XMLTV e GZ
         run: |
