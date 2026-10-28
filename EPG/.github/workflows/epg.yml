@@ -1,0 +1,63 @@
+name: Atualizar EPG Vodafone
+
+on:
+  schedule:
+    # 06:00 UTC diariamente (06:00 inverno / 07:00 verao em Portugal continental)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-epg
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Obter repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Instalar dados de fuso horario
+        run: python -m pip install tzdata
+
+      - name: Extrair EPG e gerar GZ
+        run: python epg_meogo.py
+
+      - name: Verificar XMLTV e GZ
+        run: |
+          python - <<'PY'
+          import gzip
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+          path = Path('epg_vodafone.xml.gz')
+          if not path.exists() or path.stat().st_size < 1000:
+              raise SystemExit('ERRO: ficheiro EPG GZ inexistente ou demasiado pequeno')
+          with gzip.open(path, 'rb') as f:
+              root = ET.parse(f).getroot()
+          channels = len(root.findall('channel'))
+          programmes = len(root.findall('programme'))
+          print(f'EPG: {channels} canais, {programmes} programas')
+          if channels < 50 or programmes < 1000:
+              raise SystemExit('ERRO: EPG incompleto; nao sera publicado')
+          PY
+
+      - name: Publicar GZ atualizado
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add epg_vodafone.xml.gz
+          if git diff --cached --quiet; then
+            echo 'EPG sem alteracoes'
+          else
+            git commit -m 'Atualizar EPG automaticamente'
+            git push
+          fi
