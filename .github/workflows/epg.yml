@@ -54,16 +54,23 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          
+  
           tmp_epg="$(mktemp)"
           cp epg_vodafone.xml.gz "$tmp_epg"
+          
+          
           git fetch origin main
-          git checkout -B main origin/main
+          git reset --hard origin/main
+          
+     
           cp "$tmp_epg" epg_vodafone.xml.gz
           rm -f "$tmp_epg"
+          
           git add epg_vodafone.xml.gz
           if git diff --cached --quiet; then
             echo 'EPG sem alteracoes'
           else
             git commit -m 'Atualizar EPG automaticamente'
-            git push origin HEAD:main
+            git push origin main
           fi
