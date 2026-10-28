@@ -23,8 +23,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Extrair URL da Stream e Gerar M3U8
+      - name: Extrair URL da Stream e Gerar M3U8 Telepace1
         run: python telepace1.py
+        
+      - name: Extrair URL da Stream e Gerar M3U8 Telepace2
+        run: python telepace2.py
         
 
       - name: Publicar M3U8 Atualizado
