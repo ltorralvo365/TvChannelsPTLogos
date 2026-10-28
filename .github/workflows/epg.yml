@@ -38,7 +38,7 @@ jobs:
           import gzip
           import xml.etree.ElementTree as ET
           from pathlib import Path
-          path = Path('epg_vodafone.xml.gz')
+          path = Path('EPG/epg_vodafone.xml.gz')
           if not path.exists() or path.stat().st_size < 1000:
               raise SystemExit('ERRO: ficheiro EPG GZ inexistente ou demasiado pequeno')
           with gzip.open(path, 'rb') as f:
