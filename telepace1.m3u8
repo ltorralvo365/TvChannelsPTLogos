@@ -1,8 +1,0 @@
-#EXTM3U
-#EXT-X-VERSION:3
-#EXT-X-STREAM-INF:BANDWIDTH=1465567,FRAME-RATE=50,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
-<<<<<<< HEAD
-https://cdndirector.dailymotion.com/cdn/live/video/x9pha96.m3u8?sec=94PRtw2SUgVTXL4fMhhqX6nF0NUtX_7PY3NLWR3djEs6LoLnu9uc8fNvmN12E4-mJ8osu5_GmaUSTqtJmfMrdw
-=======
-https://cdndirector.dailymotion.com/cdn/live/video/x9pha96.m3u8?sec=94PRtw2SUgVTXL4fMhhqXyP7s1yAuLbSHvQ54DPQeXusTEO7aTsFUtQhOIyeanD2857ZvHf_hWsXPYPM2rj7xw
->>>>>>> 796adeeaa37cec8d2a357c84eaea366728dbdf0d
