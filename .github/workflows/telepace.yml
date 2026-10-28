@@ -1,4 +1,4 @@
-name: Atualizar Stream Dailymotion
+name: Atualizar Stream Telepace
 
 on:
   schedule:
