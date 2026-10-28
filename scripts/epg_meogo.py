@@ -5,7 +5,7 @@ EPG MEO -> XMLTV
 Gera epg_meo.xml com todos os canais disponiveis na API da MEO.
 Sem dependencias externas (usa apenas a biblioteca padrao do Python 3.9+).
 """
-
+import os
 import urllib.request
 import urllib.parse
 import json
@@ -337,6 +337,7 @@ def main():
     # Comprimir o XMLTV completo automaticamente para .gz.
     gz_file = OUTPUT_FILE + ".gz"
     logging.info("A comprimir %s ...", gz_file)
+    os.makedirs(os.path.dirname(gz_file), exist_ok=True)
     with open(OUTPUT_FILE, "rb") as origem:
         with gzip.open(gz_file, "wb", compresslevel=9) as destino:
             shutil.copyfileobj(origem, destino)

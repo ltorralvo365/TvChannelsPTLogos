@@ -5,45 +5,34 @@ import json
 import urllib.request
 
 VIDEO_ID = "x9pha96"
-GEO_URL = f"https://geo.dailymotion.com/videos/{VIDEO_ID}"
-OUTPUT_M3U = "streams/telepace1.m3u8"  # Guardar como .m3u8
+METADATA_URL = f"https://www.dailymotion.com/player/metadata/video/{VIDEO_ID}"
+OUTPUT_M3U = "streams/telepace1.m3u8"
 
 def get_stream_url():
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept': 'application/json',
+        'Referer': f'https://www.dailymotion.com/embed/video/{VIDEO_ID}',
     }
     
-    req = urllib.request.Request(GEO_URL, headers=headers)
+    req = urllib.request.Request(METADATA_URL, headers=headers)
     
     try:
         with urllib.request.urlopen(req, timeout=15) as resp:
-            html = resp.read().decode('utf-8')
+            data = json.loads(resp.read().decode('utf-8'))
             
-            # Tenta encontrar o player config no HTML
-            match = re.search(r'__PLAYER_CONFIG__\s*=\s*(\{.+?\});', html) or \
-                    re.search(r'"stream"\s*:\s*(\{\s*"stream_type".+?\})', html)
-            
-            if not match:
-                m3u8_match = re.search(r'https://cdndirector\.dailymotion\.com/cdn/live/video/[^\s"\'\\]+', html)
-                if m3u8_match:
-                    return m3u8_match.group(0).replace('\\/', '/')
-                raise ValueError("Não foi possível encontrar o stream no HTML")
-
-            raw_data = match.group(1)
-            if not raw_data.startswith('{'):
-                raw_data = f'{{"stream":{raw_data}}}'
-            
-            data = json.loads(raw_data)
-            if "stream" in data and "url" in data["stream"]:
-                return data["stream"]["url"]
-            elif "url" in data:
-                return data["url"]
+            # Navegar pela estrutura JSON de qualidades da Dailymotion
+            qualities = data.get('qualities', {})
+            if 'auto' in qualities:
+                for stream in qualities['auto']:
+                    if 'url' in stream:
+                        return stream['url']
+                        
+            raise ValueError("Propriedade 'auto' ou 'url' não encontrada nos metadados")
 
     except Exception as e:
-        print(f"Erro ao extrair stream: {e}")
+        print(f"Erro ao extrair stream via Player API: {e}")
         return None
-
 def main():
     stream_url = get_stream_url()
     
