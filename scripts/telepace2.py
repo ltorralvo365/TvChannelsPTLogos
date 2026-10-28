@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import re
 import json
 import urllib.request
@@ -58,7 +59,7 @@ def main():
 #EXT-X-STREAM-INF:BANDWIDTH=1465567,FRAME-RATE=50,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
 {stream_url}
 """
-
+    os.makedirs(os.path.dirname(OUTPUT_M3U), exist_ok=True)
     with open(OUTPUT_M3U, "w", encoding="utf-8") as f:
         f.write(m3u_content)
 
