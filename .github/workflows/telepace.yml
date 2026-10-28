@@ -1,4 +1,4 @@
-name: Atualizar Stream Dailymotion
+name: Atualizar Streams Telepace
 
 on:
   schedule:
@@ -23,31 +23,46 @@ jobs:
         with:
           python-version: '3.11'
 
+<<<<<<< HEAD
       - name: Extrair URL da Stream e Gerar M3U8 Telepace1
         run: python telepace1.py
         
       - name: Extrair URL da Stream e Gerar M3U8 Telepace2
         run: python telepace2.py
         
+=======
+      - name: Extrair URLs das Streams e Gerar M3U8s
+        run: |
+          python telepace1.py
+          python telepace2.py
+>>>>>>> 796adeeaa37cec8d2a357c84eaea366728dbdf0d
 
-      - name: Publicar M3U8 Atualizado
+      - name: Publicar M3U8s Atualizados
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           
-          tmp_m3u="$(mktemp)"
-          cp live.m3u8 "$tmp_m3u"
+          # Guardar ambos os ficheiros gerados na pasta temporaria
+          tmp_m3u1="$(mktemp)"
+          tmp_m3u2="$(mktemp)"
+          cp telepace1.m3u8 "$tmp_m3u1"
+          cp telepace2.m3u8 "$tmp_m3u2"
           
+          # Sincronizar com a branch remota sem conflitos
           git fetch origin main
           git reset --hard origin/main
           
-          cp "$tmp_m3u" live.m3u8
-          rm -f "$tmp_m3u"
+          # Repor os dois ficheiros atualizados
+          cp "$tmp_m3u1" telepace1.m3u8
+          cp "$tmp_m3u2" telepace2.m3u8
+          rm -f "$tmp_m3u1" "$tmp_m3u2"
           
-          git add live.m3u8
+          # Adicionar ambos ao staging do Git
+          git add telepace1.m3u8 telepace2.m3u8
+          
           if git diff --cached --quiet; then
-            echo 'Sem alteracoes na stream'
+            echo 'Sem alteracoes nas streams'
           else
-            git commit -m 'Atualizar URL do stream Dailymotion'
+            git commit -m 'Atualizar URLs das streams Telepace 1 e 2'
             git push origin main
           fi
