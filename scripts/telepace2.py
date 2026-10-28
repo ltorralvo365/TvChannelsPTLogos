@@ -3,24 +3,35 @@ import os
 import re
 import json
 import urllib.request
-import subprocess
 
 VIDEO_ID = "x9qsfo8"
 METADATA_URL = f"https://www.dailymotion.com/player/metadata/video/{VIDEO_ID}"
 OUTPUT_M3U = "streams/telepace2.m3u8"
 
 def get_stream_url():
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Referer': f'https://www.dailymotion.com/embed/video/{VIDEO_ID}',
+    }
+    
+    req = urllib.request.Request(METADATA_URL, headers=headers)
+    
     try:
-        # Executa o yt-dlp para extrair diretamente a URL raw do stream .m3u8
-        cmd = ["yt-dlp", "-g", METADATA_URL]
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        stream_url = result.stdout.strip()
-        
-        if stream_url.startswith("http"):
-            return stream_url
-        return None
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode('utf-8'))
+            
+            # Navegar pela estrutura JSON de qualidades da Dailymotion
+            qualities = data.get('qualities', {})
+            if 'auto' in qualities:
+                for stream in qualities['auto']:
+                    if 'url' in stream:
+                        return stream['url']
+                        
+            raise ValueError("Propriedade 'auto' ou 'url' não encontrada nos metadados")
+
     except Exception as e:
-        print(f"Erro ao executar yt-dlp: {e}")
+        print(f"Erro ao extrair stream via Player API: {e}")
         return None
 
 def main():
