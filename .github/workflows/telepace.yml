@@ -1,0 +1,50 @@
+name: Atualizar Stream Dailymotion
+
+on:
+  schedule:
+    # Corre de 2 em 2 horas
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar-stream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Obter repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Extrair URL da Stream e Gerar M3U8
+        run: python telepace1.py
+        
+
+      - name: Publicar M3U8 Atualizado
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          
+          tmp_m3u="$(mktemp)"
+          cp live.m3u8 "$tmp_m3u"
+          
+          git fetch origin main
+          git reset --hard origin/main
+          
+          cp "$tmp_m3u" live.m3u8
+          rm -f "$tmp_m3u"
+          
+          git add live.m3u8
+          if git diff --cached --quiet; then
+            echo 'Sem alteracoes na stream'
+          else
+            git commit -m 'Atualizar URL do stream Dailymotion'
+            git push origin main
+          fi
