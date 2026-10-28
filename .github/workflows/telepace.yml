@@ -33,18 +33,18 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           
           tmp_m3u="$(mktemp)"
-          cp live.m3u8 "$tmp_m3u"
+          cp telepace1.m3u8 "$tmp_m3u"
           
           git fetch origin main
           git reset --hard origin/main
           
-          cp "$tmp_m3u" live.m3u8
+          cp "$tmp_m3u" telepace1.m3u8
           rm -f "$tmp_m3u"
           
-          git add live.m3u8
+          git add telepace1.m3u8
           if git diff --cached --quiet; then
             echo 'Sem alteracoes na stream'
           else
-            git commit -m 'Atualizar URL do stream Dailymotion'
+            git commit -m 'Atualizar URL do stream Telepace'
             git push origin main
           fi
