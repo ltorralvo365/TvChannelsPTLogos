@@ -7,10 +7,10 @@ if [ -n "$NEW_URL" ]; then
     ESCAPED=$(printf '%s' "$NEW_URL" | sed -e 's/[\\&|]/\\&/g')
     
     # Atualiza a linha logo a seguir ao "#EXTINF... Telepace 1" na playlist dentro da pasta streams/
-    sed -i "/Telepace 1/{n;s|.*|$ESCAPED|}" streams/playlist.m3u
+    sed -i "/Telepace 1/{n;s|.*|$ESCAPED|}" streams/telepace1.m3u
     
     echo "[OK] Stream do Telepace 1 atualizado com sucesso:"
-    grep -A1 "Telepace 1" streams/playlist.m3u
+    grep -A1 "Telepace 1" streams/telepace1.m3u
 else
     echo "[ERRO] Não foi possível extrair a URL com o yt-dlp."
     exit 1
