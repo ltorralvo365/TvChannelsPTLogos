@@ -2,9 +2,15 @@ name: Update Telepace Stream
 
 on:
   schedule:
+<<<<<<< HEAD
     # Corre automaticamente de 9 em 9 minutos
     - cron: '*/9 * * * *'
   # Permite correr manualmente no separador Actions do GitHub
+=======
+    # Executa automaticamente de 9 em 9 minutos
+    - cron: '*/9 * * * *'
+  # Permite a execução manual no separador Actions do GitHub
+>>>>>>> 31aa81601a2e3a8c004f441536bde8259a7ff066
   workflow_dispatch:
 
 jobs:
@@ -15,26 +21,43 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+<<<<<<< HEAD
       - name: Install Tor and yt-dlp
+=======
+      - name: Install Tor, yt-dlp and curl-cffi
+>>>>>>> 31aa81601a2e3a8c004f441536bde8259a7ff066
         run: |
           sudo apt-get update
           sudo apt-get install -y tor
           sudo service tor start
           python -m pip install --upgrade pip
-          pip install yt-dlp
+          pip install yt-dlp curl-cffi
 
       - name: Run Extraction Script
         run: |
+<<<<<<< HEAD
           # Aguarda 5 segundos para o circuito do Tor estabelecer ligação
           sleep 5
           
           # Executa o teu script na pasta scripts/
           bash scripts/script.sh
+=======
+          # Aguarda o circuito do Tor estabelecer a ligação (SOCKS5 na porta 9050)
+          sleep 5
+          
+          # Executa o script localizado na pasta scripts/
+          bash scripts/telepace1.sh
+>>>>>>> 31aa81601a2e3a8c004f441536bde8259a7ff066
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add streams/playlist.m3u
+<<<<<<< HEAD
           git commit -m "Auto-update Telepace 1 stream URL [skip ci]" || exit 0
           git push
+=======
+          git commit -m "Auto-update Telepace stream URL [skip ci]" || exit 0
+          git push
+>>>>>>> 31aa81601a2e3a8c004f441536bde8259a7ff066
