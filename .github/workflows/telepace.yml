@@ -2,48 +2,39 @@ name: Update Telepace Stream
 
 on:
   schedule:
-    # Corre de 3 em 3 horas para tentar manter o token fresco
-    - cron: '0 */3 * * *'
-  # Permite correr manualmente na tab "Actions" do GitHub
+    # Corre automaticamente de 9 em 9 minutos
+    - cron: '*/9 * * * *'
+  # Permite correr manualmente no separador Actions do GitHub
   workflow_dispatch:
 
 jobs:
-  build:
+  update-stream:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Install yt-dlp
+      - name: Install Tor and yt-dlp
         run: |
+          sudo apt-get update
+          sudo apt-get install -y tor
+          sudo service tor start
           python -m pip install --upgrade pip
           pip install yt-dlp
 
-      - name: Extract Streams via yt-dlp
+      - name: Run Extraction Script
         run: |
-          echo "A extrair URL do Telepace 1..."
+          # Aguarda 5 segundos para o circuito do Tor estabelecer ligação
+          sleep 5
           
-          # Extrai a URL do manifesto .m3u8 usando o yt-dlp
-          STREAM_URL_1=$(yt-dlp -g -f best "https://www.dailymotion.com/video/x9pha96" || echo "")
-          
-          # Escreve o ficheiro M3U
-          echo "#EXTM3U" > telepace.m3u
-          echo "#EXTINF:-1 tvg-id=\"Telepace1\" group-title=\"Itália\",Telepace 1" >> telepace.m3u
-          echo "$STREAM_URL_1" >> telepace.m3u
-          
-          echo "Conteúdo gerado:"
-          cat telepace.m3u
+          # Executa o teu script na pasta scripts/
+          bash scripts/script.sh
 
-      - name: Commit and Push
+      - name: Commit and Push Changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add telepace.m3u
-          git commit -m "Auto-update Telepace stream URL [skip ci]" || exit 0
+          git add streams/playlist.m3u
+          git commit -m "Auto-update Telepace 1 stream URL [skip ci]" || exit 0
           git push
