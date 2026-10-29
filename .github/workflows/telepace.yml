@@ -1,63 +1,49 @@
-name: Atualizar Streams Telepace
+name: Update Telepace Stream
 
 on:
   schedule:
-    # Corre de 2 em 2 horas
-    - cron: '0 */2 * * *'
+    # Corre de 3 em 3 horas para tentar manter o token fresco
+    - cron: '0 */3 * * *'
+  # Permite correr manualmente na tab "Actions" do GitHub
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  atualizar-stream:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
 
     steps:
-      - name: Obter repositorio
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Preparar Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-          
-      - name: Instalar yt-dlp
-        run: python -m pip install --upgrade yt-dlp
+          python-version: '3.x'
 
-      - name: Extrair URLs das Streams e Gerar M3U8s
+      - name: Install yt-dlp
         run: |
-          python scripts/telepace1.py
-          python scripts/telepace2.py
+          python -m pip install --upgrade pip
+          pip install yt-dlp
 
-      - name: Publicar M3U8s Atualizados
+      - name: Extract Streams via yt-dlp
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          echo "A extrair URL do Telepace 1..."
           
-          # Guardar ambos os ficheiros gerados na pasta temporaria
-          tmp_m3u1="$(mktemp)"
-          tmp_m3u2="$(mktemp)"
-          cp streams/telepace1.m3u8 "$tmp_m3u1"
-          cp streams/telepace2.m3u8 "$tmp_m3u2"
+          # Extrai a URL do manifesto .m3u8 usando o yt-dlp
+          STREAM_URL_1=$(yt-dlp -g -f best "https://www.dailymotion.com/video/x9pha96" || echo "")
           
-          # Sincronizar com a branch remota sem conflitos
-          git fetch origin main
-          git reset --hard origin/main
+          # Escreve o ficheiro M3U
+          echo "#EXTM3U" > telepace.m3u
+          echo "#EXTINF:-1 tvg-id=\"Telepace1\" group-title=\"Itália\",Telepace 1" >> telepace.m3u
+          echo "$STREAM_URL_1" >> telepace.m3u
           
-          # Garantir que a pasta de destino existe e repor os ficheiros
-          mkdir -p streams
-          cp "$tmp_m3u1" streams/telepace1.m3u8
-          cp "$tmp_m3u2" streams/telepace2.m3u8
-          rm -f "$tmp_m3u1" "$tmp_m3u2"
-          
-          # Adicionar ambos ao staging do Git
-          git add streams/telepace1.m3u8 streams/telepace2.m3u8
-          
-          if git diff --cached --quiet; then
-            echo 'Sem alteracoes nas streams'
-          else
-            git commit -m 'Atualizar URLs das streams Telepace 1 e 2'
-            git push origin main
-          fi
+          echo "Conteúdo gerado:"
+          cat telepace.m3u
+
+      - name: Commit and Push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add telepace.m3u
+          git commit -m "Auto-update Telepace stream URL [skip ci]" || exit 0
+          git push
