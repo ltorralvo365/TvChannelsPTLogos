@@ -29,7 +29,7 @@ jobs:
           sleep 5
           
           # Executa o script localizado na pasta scripts/
-          bash scripts/script.sh
+          bash scripts/telepace1.sh
 
       - name: Commit and Push Changes
         run: |
