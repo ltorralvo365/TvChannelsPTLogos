@@ -3,7 +3,7 @@ name: Atualizar EPG Vodafone
 on:
   schedule:
     # 06:00 UTC diariamente (06:00 inverno / 07:00 verao em Portugal continental)
-    - cron: '0 6 * * *'
+    - cron: '27 9 * * *'
   workflow_dispatch:
 
 permissions:
